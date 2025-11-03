@@ -174,7 +174,8 @@ class Loan {
   getDaysOverdue(currentDate = new Date()) {
     if (!this.isOverdue(currentDate)) return 0;
     const msPerDay = 24 * 60 * 60 * 1000;
-    const daysLate = Math.floor((currentDate - this.dueDate) / msPerDay);
+    const timeDiff = currentDate.getTime() - this.dueDate.getTime();
+    const daysLate = Math.ceil(timeDiff / msPerDay);
     return daysLate;
   }
 
@@ -191,7 +192,9 @@ class Loan {
   renew() {
     if (this.renewalCount >= 1) throw new Error('Maximum renewals reached');
     this.renewalCount++;
-    this.dueDate = this.calculateDueDate();
+    const newDueDate = new Date(this.dueDate);
+    newDueDate.setDate(newDueDate.getDate() + this.item.getLoanPeriod());
+    this.dueDate = newDueDate;
   }
 }
 
